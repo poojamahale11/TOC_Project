@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChomskyLens — Language Classifier</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">Σ</div>
+      <div>
+        <h1>ChomskyLens</h1>
+        <p>Interactive Chomsky Hierarchy Language Classifier</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="ghost-btn" id="examplesBtn">Examples</button>
+      <button class="primary-btn" id="themeBtn">☾ Theme</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">TOC • CHOMSKY HIERARCHY</span>
+        <h2>Understand the language,<br><span>not just the answer.</span></h2>
+        <p>Enter a simple language description or grammar. ChomskyLens checks the hierarchy step-by-step and explains the reason behind the classification.</p>
+      </div>
+      <div class="hero-badge">
+        <div class="mini-ring">4</div>
+        <span>Language Levels</span>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="panel input-panel">
+        <div class="panel-head">
+          <div>
+            <span class="section-kicker">01 · INPUT</span>
+            <h3>Describe your language</h3>
+          </div>
+          <span class="supported">Beginner friendly</span>
+        </div>
+
+        <div class="input-tabs">
+          <button class="tab active" data-mode="language">Language</button>
+          <button class="tab" data-mode="grammar">Grammar Rules</button>
+        </div>
+
+        <div id="languageMode">
+          <label for="languageInput">Language description</label>
+          <textarea id="languageInput" placeholder="Example: L = { a^n b^n | n >= 0 }"></textarea>
+          <div class="hint">Try: <b>strings ending with 01</b>, <b>L = {a^n b^n}</b>, or <b>L = {a^n b^n c^n | n >= 1}</b></div>
+        </div>
+
+        <div id="grammarMode" class="hidden">
+          <label for="grammarInput">Grammar productions</label>
+          <textarea id="grammarInput" placeholder="S -> aS&#10;S -> b"></textarea>
+          <div class="hint">Use one production per line. Example: <b>S → aS | b</b></div>
+        </div>
+
+        <div class="quick-title">Quick examples</div>
+        <div class="chips">
+          <button class="chip" data-example="L = { a^n b^n | n >= 0 }">aⁿbⁿ</button>
+          <button class="chip" data-example="L = { a^n b^n c^n | n >= 1 }">aⁿbⁿcⁿ</button>
+          <button class="chip" data-example="strings ending with 01">Ends with 01</button>
+          <button class="chip" data-example="palindromes over {0,1}">Palindrome</button>
+          <button class="chip" data-example="L = { a^n b^m | n,m >= 0 }">aⁿbᵐ</button>
+        </div>
+
+        <button class="analyze-btn" id="analyzeBtn">
+          <span>Analyze Language</span><span>→</span>
+        </button>
+        <div class="error" id="errorBox"></div>
+      </div>
+
+      <div class="panel guide-panel">
+        <div class="panel-head">
+          <div>
+            <span class="section-kicker">HOW IT WORKS</span>
+            <h3>Classification path</h3>
+          </div>
+        </div>
+        <div class="path">
+          <div class="path-item">
+            <span class="path-num">1</span>
+            <div><b>Regular?</b><small>Finite Automaton</small></div>
+          </div>
+          <div class="path-line"></div>
+          <div class="path-item">
+            <span class="path-num">2</span>
+            <div><b>Context-Free?</b><small>Pushdown Automaton</small></div>
+          </div>
+          <div class="path-line"></div>
+          <div class="path-item">
+            <span class="path-num">3</span>
+            <div><b>Context-Sensitive?</b><small>Linear Bounded Automaton</small></div>
+          </div>
+          <div class="path-line"></div>
+          <div class="path-item">
+            <span class="path-num">4</span>
+            <div><b>Type-0 / RE?</b><small>Turing Machine</small></div>
+          </div>
+        </div>
+        <div class="note">
+          <b>Important:</b> For arbitrary mathematical languages, complete automatic classification is not always decidable. This educational implementation supports common TOC language patterns and grammar forms and clearly reports when a pattern is outside its supported rule set.
+        </div>
+      </div>
+    </section>
+
+    <section id="resultSection" class="results hidden">
+      <div class="result-header">
+        <div>
+          <span class="section-kicker">02 · ANALYSIS</span>
+          <h2 id="resultTitle">Classification</h2>
+          <p id="resultSubtitle"></p>
+        </div>
+        <div class="result-badge" id="resultBadge">CFL</div>
+      </div>
+
+      <div class="hierarchy-card">
+        <div class="hierarchy-head">
+          <div>
+            <b>Chomsky Hierarchy</b>
+            <span>Your language is highlighted below</span>
+          </div>
+          <span id="typeLabel"></span>
+        </div>
+        <div class="hierarchy">
+          <div class="level" data-level="regular"><span>Type 3</span><b>Regular</b><small>Finite Automaton</small></div>
+          <div class="arrow">↓</div>
+          <div class="level" data-level="cfl"><span>Type 2</span><b>Context-Free</b><small>Pushdown Automaton</small></div>
+          <div class="arrow">↓</div>
+          <div class="level" data-level="csl"><span>Type 1</span><b>Context-Sensitive</b><small>Linear Bounded Automaton</small></div>
+          <div class="arrow">↓</div>
+          <div class="level" data-level="re"><span>Type 0</span><b>Recursively Enumerable</b><small>Turing Machine</small></div>
+        </div>
+      </div>
+
+      <div class="steps-grid">
+        <div class="steps-card">
+          <div class="card-title"><span>03</span> Step-by-step reasoning</div>
+          <div id="steps"></div>
+        </div>
+        <div class="model-card">
+          <div class="card-title"><span>04</span> Computational model</div>
+          <div class="model-icon" id="modelIcon">FA</div>
+          <h3 id="modelName">Finite Automaton</h3>
+          <p id="modelDescription"></p>
+          <div class="model-tags" id="modelTags"></div>
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="card-title"><span>05</span> Why?</div>
+          <p id="whyText"></p>
+        </div>
+        <div class="detail-card">
+          <div class="card-title"><span>06</span> Example / sanity check</div>
+          <div id="sanityCheck"></div>
+        </div>
+      </div>
+
+      <div class="diagram-card">
+        <div class="card-title"><span>07</span> Conceptual model view</div>
+        <div id="diagram"></div>
+      </div>
+
+      <div class="disclaimer" id="supportNote"></div>
+    </section>
+
+    <section class="test-suite">
+      <div class="section-kicker">ACCURACY TEST SUITE</div>
+      <h2>40 built-in language checks</h2>
+      <p class="suite-sub">10 Regular + 10 Context-Free + 10 Context-Sensitive + 10 explicit Type-0/RE model inputs.</p>
+      <button class="analyze-btn" id="runTestsBtn">Run all 40 tests →</button>
+      <div id="testSummary" class="test-summary hidden"></div>
+      <div id="testTable" class="test-table hidden"></div>
+    </section>
+
+    <section class="reference">
+      <div class="section-kicker">QUICK REFERENCE</div>
+      <h2>Four levels, one hierarchy</h2>
+      <div class="reference-grid">
+        <div class="ref-card"><span>Type 3</span><h3>Regular</h3><p>Simple patterns, finite memory.</p><b>FA / DFA / NFA</b></div>
+        <div class="ref-card"><span>Type 2</span><h3>Context-Free</h3><p>Nested or matching structures.</p><b>PDA</b></div>
+        <div class="ref-card"><span>Type 1</span><h3>Context-Sensitive</h3><p>Context-dependent relationships.</p><b>LBA</b></div>
+        <div class="ref-card"><span>Type 0</span><h3>Recursively Enumerable</h3><p>Most general grammar class.</p><b>Turing Machine</b></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>ChomskyLens · TOC Educational Project · Built for learning and demonstration</footer>
+
+  <div class="modal hidden" id="examplesModal">
+    <div class="modal-box">
+      <button class="close" id="closeModal">×</button>
+      <h2>Try these inputs</h2>
+      <p>Click an example to load it into the classifier.</p>
+      <div class="modal-list">
+        <button data-modal-example="strings ending with 01"><b>Regular</b><span>Strings ending with 01</span></button>
+        <button data-modal-example="L = { a^n b^n | n >= 0 }"><b>Context-Free</b><span>L = {aⁿbⁿ | n ≥ 0}</span></button>
+        <button data-modal-example="L = { a^n b^n c^n | n >= 1 }"><b>Context-Sensitive</b><span>L = {aⁿbⁿcⁿ | n ≥ 1}</span></button>
+        <button data-modal-example="L = { a^n b^m | n,m >= 0 }"><b>Regular</b><span>L = {aⁿbᵐ | n,m ≥ 0}</span></button>
+        <button data-modal-example="palindromes over {0,1}"><b>Context-Free</b><span>Palindromes over {0,1}</span></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
